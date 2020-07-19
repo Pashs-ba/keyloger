@@ -13,3 +13,4 @@ class GetIDSerializer(serializers.ModelSerializer):
         model = KeyloggerID
         fields = ['id']
 
+# class SaveNewDataSerializer(serializers.Serializer):
