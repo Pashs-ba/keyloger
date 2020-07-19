@@ -3,12 +3,14 @@ from rest_framework import serializers
 from .models import *
 
 
-class KeyloggerDataSerializer(serializers.ModelSerializer):
+class GetDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = KeyloggerData
         fields = ['keylogger_ref', 'date', 'data']
 
-class KeyloggerIDSerializer(serializers.ModelSerializer):
+class GetIDSerializer(serializers.ModelSerializer):
     class Meta:
         model = KeyloggerID
         fields = ['id']
+
+# class SaveNewDataSerializer(serializers.Serializer):

@@ -1,3 +1,6 @@
 /.vscode
 /log.data
 /keylogger_site/*/migrations
+tests.json
+/keylogger_site/db.sqlite3
+config.ini
