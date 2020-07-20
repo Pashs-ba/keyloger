@@ -16,7 +16,7 @@ class KeyloggerData(models.Model):
     keylogger_ref = models.ForeignKey(KeyloggerID,on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.date)
+        return '{} at {}'.format(self.data, self.date)
 
     class Meta:
         verbose_name = 'Keylogger data'
